@@ -1,0 +1,48 @@
+{
+  "exclude": ["./dist", "./tests"],
+  "include": ["index.ts", "./src/**/*"],
+  "compilerOptions": {
+    "lib": ["es2020"],
+    /* Basic Options */
+    "incremental": true,
+    "target": "ES2020",
+    "module": "commonjs",
+    "allowJs": true,
+    "checkJs": true,
+    "sourceMap": true,
+    "declaration": true,
+    "declarationMap": true,
+    "baseUrl": "./",
+    "paths": {
+      "src/*": ["./src/*"],
+      "test/*": ["./test/*"],
+      "*": ["node_modules/*", "src/types/*"]
+    },
+
+    "typeRoots": ["./node_modules/@types", "./src/types"],
+    "outDir": "dist",
+
+    /* Strict Type-Checking Options */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictBindCallApply": true,
+    "strictPropertyInitialization": false,
+    "noImplicitThis": true,
+    "alwaysStrict": true,
+
+    "skipLibCheck": true,
+    /* Module Resolution Options */
+    "moduleResolution": "node",
+    "esModuleInterop": true,
+
+    /* Experimental Options */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    /* Advanced Options */
+    "resolveJsonModule": true,
+    "forceConsistentCasingInFileNames": true
+  }
+}

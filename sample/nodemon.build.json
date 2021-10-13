@@ -1,0 +1,5 @@
+{
+  "exec": "tsc && tsc-alias",
+  "watch": ["src"],
+  "ext": "ts"
+}

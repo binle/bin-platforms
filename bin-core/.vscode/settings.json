@@ -1,0 +1,9 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+
+  "eslint.codeActionsOnSave.mode": "all",
+  "eslint.format.enable": true,
+  "git.ignoreLimitWarning": true,
+  "cSpell.words": ["binle"]
+}

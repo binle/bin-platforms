@@ -1,0 +1,22 @@
+{
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.tabSize": 2,
+
+  "eslint.codeActionsOnSave.mode": "all",
+  "eslint.format.enable": true,
+  "git.ignoreLimitWarning": true,
+  "cSpell.words": [
+    "Postgres",
+    "Serializers",
+    "TIMESTAMPTZ",
+    "Unprocessable",
+    "automock",
+    "binle",
+    "lcov",
+    "maxsize",
+    "squel",
+    "tailable",
+    "unmocked"
+  ]
+}
