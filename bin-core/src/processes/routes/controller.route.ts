@@ -5,6 +5,7 @@ import {
   ExRequestHandlerParams,
   MethodPathApi,
   IApiControllerInjectedData,
+  TypeDataHandler,
 } from 'src/definitions';
 import {
   controllerContainer,
@@ -16,7 +17,11 @@ import {
 import { MethodRoute } from './method.route';
 
 export class ControllerRoute {
-  static defineController(app: Express, prefix?: string): MethodPathApi {
+  static defineController(
+    app: Express,
+    dataHandler: TypeDataHandler,
+    prefix?: string
+  ): MethodPathApi {
     const existedApis: MethodPathApi = {};
 
     for (const key of controllerContainer.getKeys()) {
@@ -39,7 +44,7 @@ export class ControllerRoute {
           controllerInstance,
           methodName
         );
-        const definedApiData = MethodRoute.defineAPIs(controllerInstance, methodName);
+        const definedApiData = MethodRoute.defineAPIs(controllerInstance, methodName, dataHandler);
         requestHandlers.push(definedApiData.requestHandler);
         const handlerError = getMiddlewareErrorRequestHandler(controllerInstance, methodName);
         handlerError && requestHandlers.push(handlerError);

@@ -12,6 +12,9 @@ import {
   IBinHttpError,
   MethodPathApi,
   newHttpError,
+  TypeDataHandler,
+  TypeGetFailedSchema,
+  TypeGetSuccessSchema,
 } from 'src/definitions';
 import { ControllerRoute } from './controller.route';
 import { DocumentRouter } from './document.router';
@@ -34,19 +37,37 @@ export const getDefaultErrorHandler = (
   };
 };
 
+export const getDefaultDataHandler = (): TypeDataHandler => {
+  return (data: any, res: ExResponse) => {
+    res.send({ data });
+  };
+};
+
 export const routeApp = (
   app: Express,
   options?: {
     prefix?: string;
     docPath?: string;
     logger?: any;
+    dataHandlerOptions?: {
+      dataHandler: TypeDataHandler;
+      getSuccessSchema?: TypeGetSuccessSchema;
+    };
     notFoundHandle?: ExRequestHandler;
-    defaultErrorHandler?: ExErrorRequestHandler;
+    errorHandlerOptions?: {
+      errorHandler: ExErrorRequestHandler;
+      getFailedSchema?: TypeGetFailedSchema;
+    };
   }
 ): MethodPathApi => {
-  const existedApis = ControllerRoute.defineController(app, options?.prefix);
+  const dataHandler = options?.dataHandlerOptions?.dataHandler || getDefaultDataHandler();
+
+  const existedApis = ControllerRoute.defineController(app, dataHandler, options?.prefix);
   if (options?.docPath) {
-    DocumentRouter.routeDocumentAPI(app, options.docPath, existedApis);
+    DocumentRouter.routeDocumentAPI(app, options.docPath, existedApis, {
+      getSuccessSchema: options?.dataHandlerOptions?.getSuccessSchema,
+      getFailedSchema: options?.errorHandlerOptions?.getFailedSchema,
+    });
   }
 
   let notFoundHandle = options?.notFoundHandle;
@@ -56,7 +77,8 @@ export const routeApp = (
     };
   }
   const defaultErrorHandler =
-    options?.defaultErrorHandler || getDefaultErrorHandler(options?.logger || console);
+    options?.errorHandlerOptions?.errorHandler ||
+    getDefaultErrorHandler(options?.logger || console);
   app.use(path.join('/', options?.prefix || '', '*'), notFoundHandle);
   app.use(defaultErrorHandler);
 

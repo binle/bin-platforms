@@ -2,8 +2,6 @@ import path from 'path';
 import {
   ApiRequestData,
   ApiResponseData,
-  ApiResponseDataFailed,
-  ApiResponseDataSuccess,
   Express,
   ExRequest,
   ExResponse,
@@ -13,7 +11,10 @@ import {
   ISchemaCore,
   MethodPathApi,
   TypeConstructor,
-  IValidationCore,
+  getDefaultSuccessSchema,
+  getDefaultFailedSchema,
+  TypeGetFailedSchema,
+  TypeGetSuccessSchema,
 } from 'src/definitions';
 import { defineMapKeyPropertyTypeDecoratorFromType } from './../api';
 import { omit } from 'lodash';
@@ -393,7 +394,11 @@ export class DocumentRouter {
       request: ApiRequestData;
       response: ApiResponseData;
     },
-    definition: DefinitionType
+    definition: DefinitionType,
+    responseSchema?: {
+      getSuccessSchema?: TypeGetSuccessSchema;
+      getFailedSchema?: TypeGetFailedSchema;
+    }
   ): string {
     let apiContent = `<div class="request-are request-are-${method.toLowerCase()}">
       <button id="${method}_${apiPath}"
@@ -421,50 +426,42 @@ export class DocumentRouter {
     apiContent += `
         </div>`;
 
-    // generate response
-    const successSchema: IObjectSchema<ApiResponseDataSuccess> = {
-      type: 'object',
-      description: data.response.success?.description || 'Response in success case:',
-      properties: {
-        data: data.response.success?.data || ({ type: undefined } as ISchemaCore),
-      },
-    };
+    if (
+      data.response.success ||
+      (data.response.failed && Object.keys(data.response.failed).length)
+    ) {
+      // generate response
+      const successSchema = (responseSchema?.getSuccessSchema || getDefaultSuccessSchema)(
+        data?.response?.success
+      );
 
-    const getFailedDetailSchema = (failedData: ApiResponseDataFailed): IObjectSchema => ({
-      type: 'object',
-      description:
-        failedData.description || `Request failed with status ${failedData.error?.status}`,
-      properties: {
-        error: {
-          type: 'object',
-          description: JSON.stringify({
-            status: failedData.error?.status,
-            message: failedData.error?.message,
-            code: failedData.error?.code,
-          }),
-        } as IObjectSchema,
-      },
-    });
-
-    apiContent += `
+      apiContent += `
         <div class="response-content">
           <div class="response-label">Response</div>
-          ${DocumentRouter.generateSchemaHTML(definition, 'Success', successSchema)}
+          ${
+            data.response.success
+              ? DocumentRouter.generateSchemaHTML(definition, 'Success', successSchema)
+              : ''
+          }
           `;
-    for (const key in data.response.failed || {}) {
-      const failedData = (data.response.failed || {})[key];
-      if (failedData) {
-        apiContent += `
+      for (const key in data.response.failed || {}) {
+        const failedData = (data.response.failed || {})[key];
+        if (failedData) {
+          apiContent += `
           ${DocumentRouter.generateSchemaHTML(
             definition,
-            `Failed - ${key}`,
-            getFailedDetailSchema(failedData)
+            `Failed ${key || ''}`,
+            (responseSchema?.getFailedSchema || getDefaultFailedSchema)(
+              failedData.error,
+              failedData.description
+            )
           )}
           `;
+        }
       }
-    }
-    apiContent += `
+      apiContent += `
         </div>`;
+    }
 
     apiContent += `
       </div>
@@ -520,7 +517,14 @@ export class DocumentRouter {
     return hashId;
   }
 
-  static getHTMLContent(data: MethodPathApi, docPath: string): string {
+  static getHTMLContent(
+    data: MethodPathApi,
+    docPath: string,
+    responseSchema?: {
+      getSuccessSchema?: TypeGetSuccessSchema;
+      getFailedSchema?: TypeGetFailedSchema;
+    }
+  ): string {
     const definition: DefinitionType = {
       docPath,
       count: 0,
@@ -534,7 +538,8 @@ export class DocumentRouter {
           method,
           apiPath,
           data[apiPath][method],
-          definition
+          definition,
+          responseSchema
         );
       }
     }
@@ -553,9 +558,17 @@ export class DocumentRouter {
     </html>`;
   }
 
-  static routeDocumentAPI(app: Express, docPath: string, data: MethodPathApi): void {
+  static routeDocumentAPI(
+    app: Express,
+    docPath: string,
+    data: MethodPathApi,
+    responseSchema?: {
+      getSuccessSchema?: TypeGetSuccessSchema;
+      getFailedSchema?: TypeGetFailedSchema;
+    }
+  ): void {
     const docApiPath = path.join('/', docPath);
-    const content = DocumentRouter.getHTMLContent(data, docApiPath);
+    const content = DocumentRouter.getHTMLContent(data, docApiPath, responseSchema);
     app.get(docApiPath, (_req: ExRequest, res: ExResponse) => {
       res.status(200).send(content);
     });

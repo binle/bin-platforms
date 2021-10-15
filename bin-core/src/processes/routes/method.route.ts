@@ -12,6 +12,7 @@ import {
   IArraySchema,
   ISchemaCore,
   TypeConstructor,
+  TypeDataHandler,
   TypeValidateFunctionInjectedData,
 } from 'src/definitions';
 import {
@@ -27,7 +28,8 @@ import { MethodParamsRoute } from './method-params.route';
 export class MethodRoute {
   static defineAPIs(
     controllerInstance: any,
-    methodName: string
+    methodName: string,
+    dataHandler: TypeDataHandler
   ): {
     responseInfo: ApiResponseData;
     requestInfo: ApiRequestData;
@@ -96,8 +98,7 @@ export class MethodRoute {
           if (result instanceof Promise) {
             result = await result;
           }
-          const responseData: ApiResponseDataSuccess = { data: result };
-          res.send(responseData);
+          dataHandler(result, res);
         } catch (error) {
           next(error);
         }
