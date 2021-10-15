@@ -142,11 +142,10 @@ export class MethodRoute {
           description: injectedData.description,
         };
       } else if (injectedData.error) {
-        responseInfo.failed = responseInfo.failed || {};
-        responseInfo.failed[injectedData.error.status] = {
+        responseInfo.failed = responseInfo.failed || [];
+        responseInfo.failed.push({
           error: injectedData.error,
-          description: injectedData.description,
-        };
+        });
       }
     }
     return responseInfo;

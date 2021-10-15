@@ -1,16 +1,25 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-import { ISchemaCore, IBinHttpError, IObjectSchema } from '../core';
+import {
+  IBinError,
+  IBinHttpError,
+  INumberSchema,
+  IObjectSchema,
+  ISchemaCore,
+  IStringSchema,
+  NumberSchema,
+  StringSchema,
+} from '../core';
 
 export type ObjectType = unknown | Function | [Function] | string | Record<string, any>;
 
 export type ApiRequestData = { [key: string]: ISchemaCore };
 
 export type ApiResponseDataSuccess = { data?: ISchemaCore; description?: string };
-export type ApiResponseDataFailed = { error?: IBinHttpError; description?: string };
+export type ApiResponseDataFailed = { error?: IBinError | IBinError[] };
 export type ApiResponseData = {
   success?: ApiResponseDataSuccess;
-  failed?: { [key: number]: ApiResponseDataFailed };
+  failed?: ApiResponseDataFailed[];
 };
 
 export type MethodPathApi = {
@@ -40,22 +49,17 @@ export type TypeGetFailedSchema<T = ApiResponseDataFailed> = (
   description?: string
 ) => IObjectSchema<T>;
 
-export const getDefaultFailedSchema: TypeGetFailedSchema = (
-  error?: IBinHttpError,
-  description?: string
-) => ({
+export const getDefaultFailedSchema: TypeGetFailedSchema = () => ({
   type: 'object',
-  description: description || `Request failed with status ${error?.status}`,
+  description: 'Request failed :',
   properties: {
     error: {
       type: 'object',
-      description: error
-        ? JSON.stringify({
-            status: error?.status,
-            message: error?.message,
-            code: error?.code,
-          })
-        : '',
+      properties: {
+        status: { ...NumberSchema, validation: { isRequired: true } } as INumberSchema,
+        message: { ...StringSchema, validation: { isRequired: true } } as IStringSchema,
+        code: StringSchema,
+      } as IObjectSchema<IBinHttpError>,
     } as IObjectSchema,
   },
 });

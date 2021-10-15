@@ -1,4 +1,4 @@
-import { newHttpError } from '@bachle/bin-core';
+import { newBinHttpError } from '@bachle/bin-core';
 import { createLogger } from '@bachle/bin-logger';
 import axios, { AxiosResponse } from 'axios';
 import { loadConfig } from './configs';
@@ -30,7 +30,7 @@ export const initialization = async (): Promise<void> => {
         error.message;
       const code = error.response?.data?.error?.code || error.response?.data?.code || error.response?.data?.Code;
       const status = error.response?.status || 500;
-      const httpError = newHttpError({ message, status }, { code, message });
+      const httpError = newBinHttpError({ message, status }, { code, message });
       throw httpError;
     }
   );

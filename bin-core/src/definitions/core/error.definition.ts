@@ -22,12 +22,12 @@ export interface BinHttpErrorOption {
 export class BinError extends Error implements IBinError {
   code?: BinHttpErrorCode | undefined;
   status?: number;
-  data?: { [key: string]: any };
 }
 
 export class BinHttpError extends BinError implements IBinHttpError {
   status: number;
   code?: BinHttpErrorCode | undefined;
+  data?: { [key: string]: any };
 
   constructor(message: string, status: number) {
     super(message);
@@ -37,7 +37,18 @@ export class BinHttpError extends BinError implements IBinHttpError {
 //=====================================================================================
 //=====================================================================================
 
-export const newHttpError = (
+export const newBinError = (data: {
+  message: string;
+  status?: number;
+  code?: BinHttpErrorCode;
+}): IBinError => {
+  const error = new BinError(data.message);
+  error.status = data.status;
+  error.code = data.code;
+  return error;
+};
+
+export const newBinHttpError = (
   data: { message: string; status: number; code?: BinHttpErrorCode },
   opt?: BinHttpErrorOption
 ): IBinHttpError => {

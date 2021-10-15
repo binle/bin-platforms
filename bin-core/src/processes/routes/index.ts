@@ -11,7 +11,7 @@ import {
   HttpStatusCodes,
   IBinHttpError,
   MethodPathApi,
-  newHttpError,
+  newBinHttpError,
   TypeDataHandler,
   TypeGetFailedSchema,
   TypeGetSuccessSchema,
@@ -73,7 +73,7 @@ export const routeApp = (
   let notFoundHandle = options?.notFoundHandle;
   if (!notFoundHandle) {
     notFoundHandle = () => {
-      throw newHttpError(HttpStatusCodes.NOT_FOUND);
+      throw newBinHttpError(HttpStatusCodes.NOT_FOUND);
     };
   }
   const defaultErrorHandler =

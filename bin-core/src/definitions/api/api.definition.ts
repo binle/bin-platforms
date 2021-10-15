@@ -2,7 +2,7 @@ import multer from 'multer';
 import {
   ExRequestHandler,
   IArraySchema,
-  IBinHttpError,
+  IBinError,
   IdentifyOption,
   IEnumSchema,
   IFileSchema,
@@ -46,7 +46,7 @@ export const ApiRequestParamKey = Symbol('ApiRequestParamKey');
 export interface IApiResponseInjectedData {
   description?: string;
   dataSchema?: ISchemaCore;
-  error?: IBinHttpError;
+  error?: IBinError | IBinError[];
 }
 export const ApiResponseKey = Symbol('ApiResponseKey');
 

@@ -4,7 +4,7 @@
 import {
   ApiResponseKey,
   IApiResponseInjectedData,
-  IBinHttpError,
+  IBinError,
   Identifier,
   ISchemaCore,
   TypeProcessInjectedMethod,
@@ -32,13 +32,6 @@ export function getProcessApiResponseDecorator(
       if (item.dataSchema && injectedData?.dataSchema) {
         // eslint-disable-next-line quotes
         throw new Error(`There are more than one data schema of API's response!`);
-      } else if (
-        item.error?.status &&
-        injectedData?.error?.status &&
-        item.error?.status === injectedData?.error?.status
-      ) {
-        // eslint-disable-next-line quotes
-        throw new Error(`There are same error status of API's response!`);
       }
     }
     listInjectedData.push({ ...injectedData });
@@ -55,8 +48,10 @@ export const ApiResponseSuccess = (
   dataSchema: ISchemaCore,
   description?: string
 ): MethodDecorator => ApiResponse({ dataSchema, description });
-export const ApiResponseError = (error: IBinHttpError, description?: string): MethodDecorator =>
-  ApiResponse({ error, description });
+export const ApiResponseError = (
+  error: IBinError | IBinError[],
+  description?: string
+): MethodDecorator => ApiResponse({ error, description });
 // =====================================================================================================================
 export const getInjectedDataOfApiResponse = (
   instanceController: any,

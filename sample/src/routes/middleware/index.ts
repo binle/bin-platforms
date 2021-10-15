@@ -1,4 +1,4 @@
-import { ExRequestHandler, HttpStatusCodes, newHttpError } from '@bachle/bin-core';
+import { ExRequestHandler, HttpStatusCodes, newBinHttpError } from '@bachle/bin-core';
 import cors, { CorsOptions } from 'cors';
 import { BinHttpErrorCodes } from 'src/definitions';
 
@@ -10,7 +10,7 @@ export const corsMiddleware = (): ExRequestHandler => {
       if (!origin || whitelist.indexOf(origin) !== -1) {
         callback(null, true);
       } else {
-        callback(newHttpError(HttpStatusCodes.METHOD_NOT_ALLOWED, BinHttpErrorCodes.invalid_cors));
+        callback(newBinHttpError(HttpStatusCodes.METHOD_NOT_ALLOWED, BinHttpErrorCodes.invalid_cors));
       }
     },
   };

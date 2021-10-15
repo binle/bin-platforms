@@ -270,7 +270,8 @@ export class DocumentRouter {
     definition: DefinitionType,
     propertyName: string,
     schema?: ISchemaCore,
-    isObjectFromArray?: boolean
+    isObjectFromArray?: boolean,
+    isFromApi?: boolean
   ): string {
     let propertyDetailContent = '';
     let validationContent = '';
@@ -312,7 +313,20 @@ export class DocumentRouter {
           itemSchema = (itemSchema as IArraySchema).itemSchema;
         }
         leafItemSchema = itemSchema || leafItemSchema;
-        const objectName = leafItemSchema?.propertyType?.name || 'Object';
+        let objectName = leafItemSchema?.propertyType?.name || '';
+        let shouldRenderItem = true;
+        if (leafItemSchema?.propertyType && leafItemSchema?.propertyType.name !== 'Object') {
+          const hashId = DocumentRouter.generateDefinition(definition, leafItemSchema);
+          objectName = `
+            <span>
+              <a href="${definition.docPath}/#${hashId}" onclick="expandSelectedHash('${hashId}')">
+                ${hashId}
+              </a>
+              ${schema.description ? `- ${schema.description}` : ''}
+            </span>`;
+          shouldRenderItem = false;
+        }
+
         propertyDetailContent += `
               <span>
                 array - ${arrayCount}${objectName}${
@@ -320,13 +334,22 @@ export class DocumentRouter {
         }
               </span>
               ${validationContent}
-              ${DocumentRouter.generateSchemaHTML(definition, `${objectName} :`, itemSchema, true)}
+              ${
+                shouldRenderItem
+                  ? DocumentRouter.generateSchemaHTML(
+                      definition,
+                      `${objectName} :`,
+                      itemSchema,
+                      true
+                    )
+                  : ''
+              }
         `;
         break;
       }
       case 'object': {
         const properties = (schema as IObjectSchema).properties;
-        if (schema.propertyType && schema.propertyType.name !== 'Object') {
+        if (!isFromApi && schema.propertyType && schema.propertyType.name !== 'Object') {
           const hashId = DocumentRouter.generateDefinition(definition, schema);
           propertyDetailContent += `
           <span>
@@ -339,17 +362,10 @@ export class DocumentRouter {
           `;
         } else {
           if (!isObjectFromArray) {
-            const descriptionContent = `<span>${'Object'}${
-              schema.description ? `- ${schema.description}` : ''
+            const descriptionContent = `<span>${
+              schema.description || `properties in ${propertyName}:`
             }</span>`;
-
-            const objectStartContent = properties
-              ? `<div class="request-data pl20">
-            <div class="request-data-property">
-              <div class="request-data-property-detail">`
-              : '';
-
-            propertyDetailContent += `${descriptionContent}${validationContent}${objectStartContent}`;
+            propertyDetailContent += `${descriptionContent}${validationContent}`;
           }
           if (properties) {
             for (const key in properties) {
@@ -360,15 +376,7 @@ export class DocumentRouter {
               );
             }
           }
-          if (!isObjectFromArray) {
-            propertyDetailContent += properties
-              ? `</div>
-            </div>
-          </div>`
-              : '';
-          }
         }
-
         break;
       }
     }
@@ -400,7 +408,8 @@ export class DocumentRouter {
       getFailedSchema?: TypeGetFailedSchema;
     }
   ): string {
-    let apiContent = `<div class="request-are request-are-${method.toLowerCase()}">
+    let apiContent = `
+    <div class="request-are request-are-${method.toLowerCase()}">
       <button id="${method}_${apiPath}"
         type="button" class="request-collapsible request-collapsible-${method.toLowerCase()}"
       >
@@ -419,7 +428,13 @@ export class DocumentRouter {
           <div class="request-label">Request :</div>`;
     for (const fromKey in data.request) {
       if (fromKey !== 'request' && fromKey != 'response') {
-        apiContent += DocumentRouter.generateSchemaHTML(definition, fromKey, data.request[fromKey]);
+        apiContent += DocumentRouter.generateSchemaHTML(
+          definition,
+          fromKey,
+          data.request[fromKey],
+          undefined,
+          fromKey !== 'body'
+        );
       }
     }
 
@@ -440,25 +455,51 @@ export class DocumentRouter {
           <div class="response-label">Response</div>
           ${
             data.response.success
-              ? DocumentRouter.generateSchemaHTML(definition, 'Success', successSchema)
+              ? DocumentRouter.generateSchemaHTML(
+                  definition,
+                  'Success',
+                  successSchema,
+                  undefined,
+                  true
+                )
               : ''
           }
           `;
-      for (const key in data.response.failed || {}) {
-        const failedData = (data.response.failed || {})[key];
-        if (failedData) {
-          apiContent += `
-          ${DocumentRouter.generateSchemaHTML(
-            definition,
-            `Failed ${key || ''}`,
-            (responseSchema?.getFailedSchema || getDefaultFailedSchema)(
-              failedData.error,
-              failedData.description
-            )
-          )}
-          `;
+      const errors = [];
+      for (const index in data.response.failed || []) {
+        const failedData = (data.response.failed || [])[index];
+        if (failedData && failedData.error) {
+          if (failedData.error instanceof Array) {
+            for (let i = 0; i < failedData.error.length; i++) {
+              errors.push(
+                `<span>${JSON.stringify({
+                  message: failedData.error[i].message,
+                  status: failedData.error[i].status,
+                  code: failedData.error[i].code,
+                })}</span>`
+              );
+            }
+          } else {
+            errors.push(
+              `<span>${JSON.stringify({
+                message: failedData.error.message,
+                status: failedData.error.status,
+                code: failedData.error.code,
+              })}</span>`
+            );
+          }
         }
       }
+      const errorSchema = (responseSchema?.getFailedSchema || getDefaultFailedSchema)();
+      errorSchema.description = errors.join('<br/>');
+      apiContent += DocumentRouter.generateSchemaHTML(
+        definition,
+        'Failed',
+        errorSchema,
+        undefined,
+        true
+      );
+
       apiContent += `
         </div>`;
     }

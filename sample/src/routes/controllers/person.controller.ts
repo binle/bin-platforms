@@ -5,11 +5,12 @@ import {
   ApiResponseSuccess,
   Body,
   Headers,
+  HttpCodeStatuses,
   IStringSchema,
-  newHttpError,
+  newBinHttpError,
   Post,
 } from '@bachle/bin-core';
-import { Header, Person, PersonController } from 'src/definitions';
+import { BinHttpErrorCodes, Header, Person, PersonController } from 'src/definitions';
 
 @ApiController({
   name: Symbol('PersonController'),
@@ -18,8 +19,11 @@ import { Header, Person, PersonController } from 'src/definitions';
 export class PersonControllerImpl {
   @Post(PersonController.children.create, 'Create a person')
   @ApiResponseSuccess({ type: 'string' } as IStringSchema, 'Return create success response')
-  @ApiResponseError(newHttpError({ message: 'invalid user', status: 401 }))
-  helloAnonymous(@Body() person: Person, @Headers() { apiKey }: Header): string {
+  @ApiResponseError([
+    newBinHttpError(HttpCodeStatuses[401]),
+    newBinHttpError({ ...BinHttpErrorCodes.invalid_authorized_state, ...HttpCodeStatuses[403] }),
+  ])
+  helloAnonymous(@Headers() { apiKey }: Header, @Body() person: Person): string {
     console.log({ apiKey });
     return `hello ${person || 'anonymous'}! Welcome to my service.`;
   }

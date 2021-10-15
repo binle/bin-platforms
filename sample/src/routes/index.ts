@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { express, Express, ExRequest, ExResponse, routeApp } from '@bachle/bin-core';
+import { ApiResponseDataSuccess, express, Express, ExRequest, ExResponse, routeApp } from '@bachle/bin-core';
 import fse from 'fs-extra';
 import path from 'path';
 import { HelperUtil } from 'src/app';
@@ -29,6 +29,15 @@ const routeServer = (app: Express): void => {
     prefix: 'api',
     docPath: 'doc',
     logger: global.applicationContexts.logger,
+    dataHandlerOptions: {
+      dataHandler: (data: any, res: ExResponse) => {
+        res.send(data);
+      },
+      getSuccessSchema: (response?: ApiResponseDataSuccess) =>
+        response?.data || {
+          description: 'Response in success case:',
+        },
+    },
   });
 };
 
