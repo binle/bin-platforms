@@ -315,7 +315,18 @@ export class DocumentRouter {
         leafItemSchema = itemSchema || leafItemSchema;
         let objectName = leafItemSchema?.propertyType?.name || '';
         let shouldRenderItem = true;
-        if (leafItemSchema?.propertyType && leafItemSchema?.propertyType.name !== 'Object') {
+        if (
+          leafItemSchema?.type === 'boolean' ||
+          leafItemSchema?.type === 'string' ||
+          leafItemSchema?.type === 'number' ||
+          leafItemSchema?.type === 'integer' ||
+          leafItemSchema?.type === 'enum' ||
+          leafItemSchema?.type === 'date' ||
+          leafItemSchema?.type === 'file'
+        ) {
+          objectName = leafItemSchema?.type;
+          shouldRenderItem = false;
+        } else if (leafItemSchema?.propertyType && leafItemSchema?.propertyType.name !== 'Object') {
           const hashId = DocumentRouter.generateDefinition(definition, leafItemSchema);
           objectName = `
             <span>
