@@ -1,7 +1,12 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { ApiRequestParamInjectedData, ApiRequestParamKey, ISchemaGeneral } from 'src/definitions';
+import {
+  ApiRequestParamInjectedData,
+  ApiRequestParamKey,
+  ISchemaGeneral,
+  IObjectSchema,
+} from 'src/definitions';
 import {
   createMethodParamDecorator,
   getAllInjectedDataOfDecoratedMethodParams,
@@ -15,55 +20,39 @@ export const MethodParams =
 export const Req = (): ParameterDecorator => MethodParams({ from: 'request' });
 export const Res = (): ParameterDecorator => MethodParams({ from: 'response' });
 
-export const Body = (schema?: ISchemaGeneral): ParameterDecorator => {
-  if (schema) {
-    schema.validation = schema.validation || {};
-    schema.validation.isRequired = true;
-  } else {
-    schema = { validation: { isRequired: true } };
-  }
-  return MethodParams({ from: 'body', schema });
-};
+export const Body = (schema?: ISchemaGeneral): ParameterDecorator =>
+  MethodParams({
+    from: 'body',
+    schema: { ...schema, validation: { ...schema?.validation, isRequired: true } },
+  });
 
 export const BodyOptional = (schema?: ISchemaGeneral): ParameterDecorator =>
   MethodParams({ from: 'body', schema });
 
-export const Headers = (schema?: ISchemaGeneral): ParameterDecorator => {
-  if (schema) {
-    schema.validation = schema.validation || {};
-    schema.validation.isRequired = true;
-  } else {
-    schema = { validation: { isRequired: true } };
-  }
-  return MethodParams({ from: 'headers', schema });
-};
-export const HeadersOptional = (schema?: ISchemaGeneral): ParameterDecorator =>
-  MethodParams({ from: 'headers', schema });
+export const Headers = (schema?: IObjectSchema): ParameterDecorator =>
+  MethodParams({
+    from: 'headers',
+    schema: { ...schema, type: 'object', validation: { ...schema?.validation, isRequired: true } },
+  });
 
-export const Params = (schema?: ISchemaGeneral): ParameterDecorator => {
-  if (schema) {
-    schema.validation = schema.validation || {};
-    schema.validation.isRequired = true;
-  } else {
-    schema = { validation: { isRequired: true } };
-  }
-  return MethodParams({ from: 'params', schema });
-};
-export const ParamsOptional = (schema?: ISchemaGeneral): ParameterDecorator =>
-  MethodParams({ from: 'params', schema });
+export const HeadersOptional = (schema?: IObjectSchema): ParameterDecorator =>
+  MethodParams({ from: 'headers', schema: { ...schema, type: 'object' } });
 
-export const Queries = (schema?: ISchemaGeneral): ParameterDecorator => {
-  if (schema) {
-    schema.validation = schema.validation || {};
-    schema.validation.isRequired = true;
-  } else {
-    schema = { validation: { isRequired: true } };
-  }
-  return MethodParams({ from: 'query', schema });
-};
+export const Params = (schema?: IObjectSchema): ParameterDecorator =>
+  MethodParams({
+    from: 'params',
+    schema: { ...schema, type: 'object', validation: { ...schema?.validation, isRequired: true } },
+  });
+export const ParamsOptional = (schema?: IObjectSchema): ParameterDecorator =>
+  MethodParams({ from: 'params', schema: { ...schema, type: 'object' } });
 
-export const QueriesOptional = (schema?: ISchemaGeneral): ParameterDecorator =>
-  MethodParams({ from: 'query', schema });
+export const Queries = (schema?: IObjectSchema): ParameterDecorator =>
+  MethodParams({
+    from: 'query',
+    schema: { ...schema, type: 'object', validation: { ...schema?.validation, isRequired: true } },
+  });
+export const QueriesOptional = (schema?: IObjectSchema): ParameterDecorator =>
+  MethodParams({ from: 'query', schema: { ...schema, type: 'object' } });
 
 // =====================================================================================================================
 export const getAllInjectedDataOfParamsInApi = (

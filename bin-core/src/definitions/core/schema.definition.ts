@@ -113,3 +113,32 @@ export const FileSchema: IFileSchema = { type: 'file' };
 export const EnumSchema: IEnumSchema = { type: 'enum', enumValues: [] };
 export const ArraySchema: IArraySchema = { type: 'array' };
 export const ObjectSchema: IObjectSchema = { type: 'object' };
+
+export const BooleanRequireSchema: IBooleanSchema = {
+  type: 'boolean',
+  validation: { isRequired: true },
+};
+export const StringRequireSchema: IStringSchema = {
+  type: 'string',
+  validation: { isRequired: true },
+};
+export const NumberRequireSchema: INumberSchema = {
+  type: 'number',
+  validation: { isRequired: true },
+};
+export const IntegerRequireSchema: IIntegerSchema = {
+  type: 'integer',
+  validation: { isRequired: true },
+};
+export const DateRequireSchema: IDateSchema = { type: 'date', validation: { isRequired: true } };
+export const FileRequireSchema: IFileSchema = { type: 'file', validation: { isRequired: true } };
+export const EnumRequireSchema: IEnumSchema = {
+  type: 'enum',
+  enumValues: [],
+  validation: { isRequired: true },
+};
+export const ArrayRequireSchema: IArraySchema = { type: 'array', validation: { isRequired: true } };
+export const ObjectRequireSchema: IObjectSchema = {
+  type: 'object',
+  validation: { isRequired: true },
+};

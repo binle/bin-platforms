@@ -26,20 +26,20 @@ const mapSchema: { [key: string]: ISchemaCore } = {};
 // =====================================================================================================================
 
 const defineOption = (option?: IApiPropertyInjectedData, isRequired?: boolean) => {
-  option = option || {};
-  option.validation = { ...option.validation, isRequired };
-  if (!option.type) {
-    if ((option as IObjectSchema).properties) {
-      option.type = 'object';
+  const optionTemp = option || {};
+  optionTemp.validation = { ...optionTemp.validation, isRequired };
+  if (!optionTemp.type) {
+    if ((optionTemp as IObjectSchema).properties) {
+      optionTemp.type = 'object';
     }
-    if ((option as IArraySchema).itemSchema) {
-      option.type = 'array';
+    if ((optionTemp as IArraySchema).itemSchema) {
+      optionTemp.type = 'array';
     }
-    if ((option as IEnumSchema).enumValues) {
-      option.type = 'enum';
+    if ((optionTemp as IEnumSchema).enumValues) {
+      optionTemp.type = 'enum';
     }
   }
-  return option;
+  return optionTemp;
 };
 
 const ApiPropertyProcess = createPropertyTypeDecorator(ApiPropertyKey, mapSchema);

@@ -7,6 +7,8 @@ import {
   IBinError,
   Identifier,
   ISchemaCore,
+  IObjectSchema,
+  IArraySchema,
   TypeProcessInjectedMethod,
 } from 'src/definitions';
 import { createMethodDecorator, getInjectedDataOfDecoratedMethod } from './../core';
@@ -48,6 +50,17 @@ export const ApiResponseSuccess = (
   dataSchema: ISchemaCore,
   description?: string
 ): MethodDecorator => ApiResponse({ dataSchema, description });
+
+export const ApiResponseSuccessObject = (
+  dataSchema: IObjectSchema,
+  description?: string
+): MethodDecorator => ApiResponse({ dataSchema: { ...dataSchema, type: 'object' }, description });
+
+export const ApiResponseSuccessArray = (
+  dataSchema: IArraySchema,
+  description?: string
+): MethodDecorator => ApiResponse({ dataSchema: { ...dataSchema, type: 'array' }, description });
+
 export const ApiResponseError = (
   error: IBinError | IBinError[],
   description?: string
