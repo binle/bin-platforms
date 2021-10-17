@@ -113,14 +113,13 @@ export class MethodRoute {
   ) {
     const requestInfo: ApiRequestData = {};
     for (const index in allInjectedParamsInApi) {
+      const tempSchema = merge(
+        {},
+        allInjectedParamsInApi[index].schema,
+        getSchemaOfType(paramsTypes[index]) as ISchemaCore
+      );
       requestInfo[allInjectedParamsInApi[index].from] =
-        MethodRoute.defineArraySchema(
-          merge(
-            {},
-            allInjectedParamsInApi[index].schema,
-            getSchemaOfType(paramsTypes[index]) as ISchemaCore
-          )
-        ) || {};
+        MethodRoute.defineArraySchema(tempSchema) || {};
     }
     return requestInfo;
   }
@@ -147,7 +146,11 @@ export class MethodRoute {
 
   private static defineArraySchema = (tempSchema: ISchemaCore | undefined) => {
     if (tempSchema?.type !== 'array') {
-      return (tempSchema?.propertyType && getSchemaOfType(tempSchema.propertyType)) || tempSchema;
+      return (
+        (tempSchema?.propertyType &&
+          merge({}, tempSchema, getSchemaOfType(tempSchema.propertyType))) ||
+        tempSchema
+      );
     } else if ((tempSchema as IArraySchema).itemSchema) {
       (tempSchema as IArraySchema).itemSchema = MethodRoute.defineArraySchema(
         (tempSchema as IArraySchema).itemSchema as ISchemaCore

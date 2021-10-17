@@ -1,12 +1,4 @@
-import {
-  IArraySchema,
-  IObjectSchema,
-  IStringSchema,
-  ApiProperty,
-  ApiPropertyOptional,
-  getMapSchemaOfApiProperty,
-  getSchemaOfType,
-} from '@bachle/bin-core';
+import { ApiProperty, ApiPropertyOptional, IArraySchema, IStringSchema } from '@bachle/bin-core';
 import { Car as Car2 } from './test';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */

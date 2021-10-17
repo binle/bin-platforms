@@ -1,16 +1,24 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import Redis from 'redis';
+import Redis, { RedisClient } from 'redis';
 import { IRedisGlobal } from 'src/definitions';
 
 export const createRedis = (option: { host: string; port: number }): IRedisGlobal => {
   if (!option || !option.host || !option.port) {
     throw new Error('Redis required server configuration!');
   }
-  const redisClient = Redis.createClient();
+
+  let redisClient: RedisClient;
+
+  const getRedisClient = () => {
+    if (!redisClient) {
+      redisClient = Redis.createClient(option);
+    }
+    return redisClient;
+  };
 
   const asyncGet = <T extends any>(key: string): Promise<T | undefined> => {
     return new Promise<T | undefined>((resolve, reject) =>
-      redisClient.get(key, (error, data) =>
+      getRedisClient().get(key, (error, data) =>
         error ? reject(error) : resolve(data ? JSON.parse(data as string) : undefined)
       )
     );
@@ -31,17 +39,17 @@ export const createRedis = (option: { host: string; port: number }): IRedisGloba
       const cb = (error: any) => (error ? reject(error) : resolve());
       const stringData = JSON.stringify(data);
       expiredTime
-        ? redisClient.set(key, stringData, 'EX', expiredTime * 1000, cb)
-        : redisClient.set(key, stringData, cb);
+        ? getRedisClient().set(key, stringData, 'EX', expiredTime * 1000, cb)
+        : getRedisClient().set(key, stringData, cb);
     });
   };
 
   const asyncDelete = (key: string): Promise<void> => {
-    return new Promise((resolve, reject) => redisClient.del(key, (error) => (error ? reject(error) : resolve())));
+    return new Promise((resolve, reject) => getRedisClient().del(key, (error) => (error ? reject(error) : resolve())));
   };
 
   const redis: IRedisGlobal = {
-    redisClient,
+    getRedisClient,
     asyncGet: asyncGetWithDeleteOption,
     asyncSet,
     asyncDelete,

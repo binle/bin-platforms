@@ -2,7 +2,7 @@ import { LoggerOptions } from '@bachle/bin-logger';
 import { RedisClient } from 'redis';
 
 export interface IRedisGlobal {
-  redisClient: RedisClient;
+  getRedisClient: () => RedisClient;
   asyncGet<T extends unknown>(key: string, deleteAfterGet?: boolean): Promise<T | undefined>;
 
   asyncSet<T extends unknown>(key: string, data: T, expiredTime?: number): Promise<void>;
