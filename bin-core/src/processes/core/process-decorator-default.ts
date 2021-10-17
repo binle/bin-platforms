@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 
+import { merge } from 'lodash';
 import {
   CONSTRUCTOR_SCHEMA_KEY,
   IArraySchema,
@@ -147,7 +148,6 @@ export function getDefaultProcessPropertyTypeDecorator<T extends ISchemaCore = I
       mapSchema[constructorMapKey] ||
       ({
         type: 'object',
-        properties: {},
         propertyType: target.constructor,
       } as IObjectSchema);
 
@@ -167,7 +167,7 @@ export function getDefaultProcessPropertyTypeDecorator<T extends ISchemaCore = I
             index: tempIndex,
           });
 
-          return { ...tempSchema, ...mapSchema[tempConstructorMapKey] };
+          return merge({}, tempSchema, mapSchema[tempConstructorMapKey]);
         } else if ((tempSchema as IArraySchema).itemSchema) {
           (tempSchema as IArraySchema).itemSchema = doWithArraySchema(
             (tempSchema as IArraySchema).itemSchema as ISchemaCore
@@ -184,12 +184,7 @@ export function getDefaultProcessPropertyTypeDecorator<T extends ISchemaCore = I
         name: tempName,
         index: tempIndex,
       });
-      const tempSchema = {
-        ...mapSchema[tempConstructorMapKey],
-        ...injectedData,
-        propertyType,
-      };
-      propertySchema = tempSchema;
+      propertySchema = merge({}, mapSchema[tempConstructorMapKey], injectedData);
     }
 
     const properties = targetSchema.properties || {};
@@ -203,7 +198,7 @@ export function getDefaultProcessPropertyTypeDecorator<T extends ISchemaCore = I
     }
     Reflect.defineMetadata(
       metadataPropertyKey,
-      { ...(injectedData || {}), propertyType },
+      { ...injectedData, propertyType },
       target,
       propertyName
     );

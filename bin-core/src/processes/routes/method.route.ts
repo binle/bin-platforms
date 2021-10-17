@@ -4,7 +4,6 @@ import {
   ApiRequestData,
   ApiRequestParamInjectedData,
   ApiResponseData,
-  ApiResponseDataSuccess,
   ExNextFunction,
   ExRequest,
   ExRequestHandler,
