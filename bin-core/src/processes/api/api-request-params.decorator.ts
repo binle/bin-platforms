@@ -6,6 +6,7 @@ import {
   ApiRequestParamKey,
   ISchemaGeneral,
   IObjectSchema,
+  IArraySchema,
 } from 'src/definitions';
 import {
   createMethodParamDecorator,
@@ -25,9 +26,16 @@ export const Body = (schema?: ISchemaGeneral): ParameterDecorator =>
     from: 'body',
     schema: { ...schema, validation: { ...schema?.validation, isRequired: true } },
   });
+export const BodyArray = (schema?: IArraySchema): ParameterDecorator =>
+  MethodParams({
+    from: 'body',
+    schema: { ...schema, type: 'array', validation: { ...schema?.validation, isRequired: true } },
+  });
 
 export const BodyOptional = (schema?: ISchemaGeneral): ParameterDecorator =>
   MethodParams({ from: 'body', schema });
+export const BodyArrayOptional = (schema?: ISchemaGeneral): ParameterDecorator =>
+  MethodParams({ from: 'body', schema: { ...schema, type: 'array' } });
 
 export const Headers = (schema?: IObjectSchema): ParameterDecorator =>
   MethodParams({

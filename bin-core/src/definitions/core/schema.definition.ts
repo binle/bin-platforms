@@ -87,7 +87,7 @@ export interface IArraySchema<I = any> extends ISchemaCore<Array<I>, IValidation
   itemSchema?: ISchemaCore<I>;
 }
 export interface IObjectSchema<T = any> extends ISchemaCore<T, IValidationObject<T>> {
-  properties?: { [key in keyof T]: ISchemaCore<any> };
+  properties?: { [key in keyof T]: ISchemaGeneral };
 }
 //=====================================================================================
 export type ISchemaGeneral =
