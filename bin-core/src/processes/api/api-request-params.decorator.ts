@@ -15,13 +15,54 @@ export const MethodParams =
 export const Req = (): ParameterDecorator => MethodParams({ from: 'request' });
 export const Res = (): ParameterDecorator => MethodParams({ from: 'response' });
 
-export const Body = (schema?: ISchemaGeneral): ParameterDecorator =>
+export const Body = (schema?: ISchemaGeneral): ParameterDecorator => {
+  if (schema) {
+    schema.validation = schema.validation || {};
+    schema.validation.isRequired = true;
+  } else {
+    schema = { validation: { isRequired: true } };
+  }
+  return MethodParams({ from: 'body', schema });
+};
+
+export const BodyOptional = (schema?: ISchemaGeneral): ParameterDecorator =>
   MethodParams({ from: 'body', schema });
-export const Headers = (schema?: ISchemaGeneral): ParameterDecorator =>
+
+export const Headers = (schema?: ISchemaGeneral): ParameterDecorator => {
+  if (schema) {
+    schema.validation = schema.validation || {};
+    schema.validation.isRequired = true;
+  } else {
+    schema = { validation: { isRequired: true } };
+  }
+  return MethodParams({ from: 'headers', schema });
+};
+export const HeadersOptional = (schema?: ISchemaGeneral): ParameterDecorator =>
   MethodParams({ from: 'headers', schema });
-export const Params = (schema?: ISchemaGeneral): ParameterDecorator =>
+
+export const Params = (schema?: ISchemaGeneral): ParameterDecorator => {
+  if (schema) {
+    schema.validation = schema.validation || {};
+    schema.validation.isRequired = true;
+  } else {
+    schema = { validation: { isRequired: true } };
+  }
+  return MethodParams({ from: 'params', schema });
+};
+export const ParamsOptional = (schema?: ISchemaGeneral): ParameterDecorator =>
   MethodParams({ from: 'params', schema });
-export const Queries = (schema?: ISchemaGeneral): ParameterDecorator =>
+
+export const Queries = (schema?: ISchemaGeneral): ParameterDecorator => {
+  if (schema) {
+    schema.validation = schema.validation || {};
+    schema.validation.isRequired = true;
+  } else {
+    schema = { validation: { isRequired: true } };
+  }
+  return MethodParams({ from: 'query', schema });
+};
+
+export const QueriesOptional = (schema?: ISchemaGeneral): ParameterDecorator =>
   MethodParams({ from: 'query', schema });
 
 // =====================================================================================================================
