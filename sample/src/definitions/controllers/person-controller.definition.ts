@@ -36,7 +36,7 @@ export class Person {
   } as IArraySchema)
   car: Car[];
 
-  @ApiPropertyOptional()
+  @ApiPropertyOptional({ description: ' Main car ' })
   mainCar: Car2;
 
   @ApiProperty()

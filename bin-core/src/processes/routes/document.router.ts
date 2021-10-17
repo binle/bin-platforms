@@ -125,7 +125,7 @@ export class DocumentRouter {
 
       .request-method-definition{ 
         justify-content: start;
-        padding: 0 0 0 20px;
+        padding: 0 10px 0 20px;
       }
   
       .request-method-get {
@@ -542,6 +542,7 @@ export class DocumentRouter {
         <div class="request-method request-method-definition">
           ${index}-${schema.propertyType?.name}
         </div>
+        ${schema.description || ''}
       </button>
       <div class="content">
     `;

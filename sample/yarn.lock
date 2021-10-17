@@ -915,7 +915,7 @@
     to-fast-properties "^2.0.0"
 
 "@bachle/bin-core@file:../bin-core":
-  version "0.0.24"
+  version "0.0.30"
   dependencies:
     express "^4.17.1"
     lodash "^4.17.21"

@@ -153,7 +153,7 @@ export function getDefaultProcessPropertyTypeDecorator<T extends ISchemaCore = I
 
     let propertySchema;
     if (injectedData.type === 'array') {
-      let tempSchema = { ...injectedData } as IArraySchema;
+      const arraySchema = { ...injectedData } as IArraySchema;
       const doWithArraySchema = (tempSchema: ISchemaCore) => {
         const type = tempSchema.type || tempSchema.propertyType?.name.toLowerCase();
         if (type !== 'array') {
@@ -175,8 +175,7 @@ export function getDefaultProcessPropertyTypeDecorator<T extends ISchemaCore = I
         }
         return tempSchema;
       };
-      tempSchema = doWithArraySchema(tempSchema);
-      propertySchema = tempSchema;
+      propertySchema = doWithArraySchema(arraySchema);
     } else {
       const tempName = propertyType.name;
       const tempIndex =

@@ -64,7 +64,9 @@ export class MethodRoute {
               allInjectedParamsInApi[index]
             );
             if (definedValue.canValidate) {
-              const paramSchema = getSchemaOfType(paramsTypes[index]);
+              const paramSchema = MethodRoute.defineArraySchema(
+                getSchemaOfType(paramsTypes[index])
+              );
               const error = await asyncValidate(
                 paramSchema,
                 definedValue.value,
@@ -112,11 +114,14 @@ export class MethodRoute {
   ) {
     const requestInfo: ApiRequestData = {};
     for (const index in allInjectedParamsInApi) {
-      requestInfo[allInjectedParamsInApi[index].from] = merge(
-        {},
-        allInjectedParamsInApi[index].schema,
-        getSchemaOfType(paramsTypes[index]) as ISchemaCore
-      );
+      requestInfo[allInjectedParamsInApi[index].from] =
+        MethodRoute.defineArraySchema(
+          merge(
+            {},
+            allInjectedParamsInApi[index].schema,
+            getSchemaOfType(paramsTypes[index]) as ISchemaCore
+          )
+        ) || {};
     }
     return requestInfo;
   }
@@ -124,21 +129,11 @@ export class MethodRoute {
   private static defineResponseInfo(controllerInstance: any, methodName: string) {
     const responseInjectedData = getInjectedDataOfApiResponse(controllerInstance, methodName) || [];
 
-    const doWithArraySchema = (tempSchema: ISchemaCore) => {
-      if (tempSchema.type !== 'array') {
-        return (tempSchema.propertyType && getSchemaOfType(tempSchema.propertyType)) || tempSchema;
-      } else if ((tempSchema as IArraySchema).itemSchema) {
-        (tempSchema as IArraySchema).itemSchema = doWithArraySchema(
-          (tempSchema as IArraySchema).itemSchema as ISchemaCore
-        );
-      }
-      return tempSchema;
-    };
     const responseInfo: ApiResponseData = {};
     for (const injectedData of responseInjectedData) {
       if (injectedData.dataSchema) {
         responseInfo.success = {
-          data: doWithArraySchema(injectedData.dataSchema as ISchemaCore),
+          data: MethodRoute.defineArraySchema(injectedData.dataSchema as ISchemaCore),
           description: injectedData.description,
         };
       } else if (injectedData.error) {
@@ -150,4 +145,15 @@ export class MethodRoute {
     }
     return responseInfo;
   }
+
+  private static defineArraySchema = (tempSchema: ISchemaCore | undefined) => {
+    if (tempSchema?.type !== 'array') {
+      return (tempSchema?.propertyType && getSchemaOfType(tempSchema.propertyType)) || tempSchema;
+    } else if ((tempSchema as IArraySchema).itemSchema) {
+      (tempSchema as IArraySchema).itemSchema = MethodRoute.defineArraySchema(
+        (tempSchema as IArraySchema).itemSchema as ISchemaCore
+      );
+    }
+    return tempSchema;
+  };
 }
