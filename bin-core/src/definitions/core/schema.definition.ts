@@ -84,7 +84,7 @@ export interface IEnumSchema extends ISchemaCore<any, IValidationEnum> {
   enumName?: string;
 }
 export interface IArraySchema<I = any> extends ISchemaCore<Array<I>, IValidationArray<I>> {
-  itemSchema?: ISchemaCore<I>;
+  itemSchema?: ISchemaGeneral;
 }
 export interface IObjectSchema<T = any> extends ISchemaCore<T, IValidationObject<T>> {
   properties?: { [key in keyof T]: ISchemaGeneral };

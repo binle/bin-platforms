@@ -1,7 +1,7 @@
 {
   "name": "@bachle/bin-core",
   "description": "",
-  "version": "0.0.33",
+  "version": "0.0.35",
   "main": "dist/index.js",
   "license": "MIT",
   "author": "binle - Bach Le Xuan",
