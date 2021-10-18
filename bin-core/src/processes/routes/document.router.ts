@@ -268,9 +268,8 @@ export class DocumentRouter {
 
   private static generateSchemaHTML(
     definition: DefinitionType,
-    propertyName: string,
+    propertyName?: string,
     schema?: ISchemaCore,
-    isObjectFromArray?: boolean,
     isFromApi?: boolean
   ): string {
     let propertyDetailContent = '';
@@ -340,19 +339,14 @@ export class DocumentRouter {
 
         propertyDetailContent += `
               <span>
-                array - ${arrayCount}${objectName}${
+                array - ${arrayCount}${objectName || 'Object'}${
           schema.description ? `- ${schema.description}` : ''
         }
               </span>
               ${validationContent}
               ${
                 shouldRenderItem
-                  ? DocumentRouter.generateSchemaHTML(
-                      definition,
-                      `${objectName} :`,
-                      itemSchema,
-                      true
-                    )
+                  ? DocumentRouter.generateSchemaHTML(definition, objectName, leafItemSchema)
                   : ''
               }
         `;
@@ -372,12 +366,10 @@ export class DocumentRouter {
           ${validationContent}
           `;
         } else {
-          if (!isObjectFromArray) {
-            const descriptionContent = `<span>${
-              schema.description || `properties in ${propertyName}:`
-            }</span>`;
-            propertyDetailContent += `${descriptionContent}${validationContent}`;
-          }
+          const descriptionContent = `<span>${
+            schema.description || `properties in ${propertyName || 'object'}:`
+          }</span>`;
+          propertyDetailContent += `${descriptionContent}${validationContent}`;
           if (properties) {
             for (const key in properties) {
               propertyDetailContent += DocumentRouter.generateSchemaHTML(
@@ -397,7 +389,11 @@ export class DocumentRouter {
     return `
       <div class="request-data pl20">
         <div class="request-data-property">
-          <span class="request-data-property-name ${redHighlight}">${propertyName}</span>
+          ${
+            propertyName
+              ? `<span class="request-data-property-name ${redHighlight}">${propertyName}</span>`
+              : ''
+          }
           <div class="request-data-property-detail">
             ${propertyDetailContent}
           </div>
@@ -443,7 +439,6 @@ export class DocumentRouter {
           definition,
           fromKey,
           data.request[fromKey],
-          undefined,
           fromKey !== 'body'
         );
       }
@@ -466,13 +461,7 @@ export class DocumentRouter {
           <div class="response-label">Response</div>
           ${
             data.response.success
-              ? DocumentRouter.generateSchemaHTML(
-                  definition,
-                  'Success',
-                  successSchema,
-                  undefined,
-                  true
-                )
+              ? DocumentRouter.generateSchemaHTML(definition, 'Success', successSchema, true)
               : ''
           }
           `;
@@ -503,13 +492,7 @@ export class DocumentRouter {
       }
       const errorSchema = (responseSchema?.getFailedSchema || getDefaultFailedSchema)();
       errorSchema.description = errors.join('<br/>');
-      apiContent += DocumentRouter.generateSchemaHTML(
-        definition,
-        'Failed',
-        errorSchema,
-        undefined,
-        true
-      );
+      apiContent += DocumentRouter.generateSchemaHTML(definition, 'Failed', errorSchema, true);
 
       apiContent += `
         </div>`;
