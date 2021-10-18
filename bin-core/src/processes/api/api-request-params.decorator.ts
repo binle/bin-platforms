@@ -21,16 +21,11 @@ export const MethodParams =
 export const Req = (): ParameterDecorator => MethodParams({ from: 'request' });
 export const Res = (): ParameterDecorator => MethodParams({ from: 'response' });
 
-export const Body = (schema?: ISchemaGeneral): ParameterDecorator => {
-  console.log('Body =========================', {
-    ...schema,
-    validation: { ...schema?.validation, isRequired: true },
-  });
-  return MethodParams({
+export const Body = (schema?: ISchemaGeneral): ParameterDecorator =>
+  MethodParams({
     from: 'body',
     schema: { ...schema, validation: { ...schema?.validation, isRequired: true } },
   });
-};
 export const BodyArray = (schema?: IArraySchema): ParameterDecorator =>
   MethodParams({
     from: 'body',
