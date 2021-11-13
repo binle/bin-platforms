@@ -179,13 +179,14 @@ export class DocumentRouter {
       }
   
       .request-data-property-name {
-        width: 200px;
+        min0-width: 200px;
       }
   
       .request-data-property-detail {
         flex: 1;
         display: flex;
         flex-direction: column;
+        padding-left: 5px;
       }
   
       /* ================================== */
@@ -366,9 +367,7 @@ export class DocumentRouter {
           ${validationContent}
           `;
         } else {
-          const descriptionContent = `<span>${
-            schema.description || `properties in ${propertyName || 'object'}:`
-          }</span>`;
+          const descriptionContent = `<span>${schema.description || ''}</span>`;
           propertyDetailContent += `${descriptionContent}${validationContent}`;
           if (properties) {
             for (const key in properties) {
