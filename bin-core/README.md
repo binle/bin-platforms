@@ -19,7 +19,7 @@ routeApp(
     docPath?: string;
     logger?: any;
     dataHandlerOptions?: {
-      dataHandler: TypeDataHandler;
+      dataHandler: ResponseDataHandler;
       getSuccessSchema?: TypeGetSuccessSchema;
     };
     notFoundHandle?: ExRequestHandler;

@@ -12,7 +12,7 @@ import {
   IBinHttpError,
   MethodPathApi,
   newBinHttpError,
-  TypeDataHandler,
+  ResponseDataHandler,
   TypeGetFailedSchema,
   TypeGetSuccessSchema,
 } from 'src/definitions';
@@ -37,7 +37,7 @@ export const getDefaultErrorHandler = (
   };
 };
 
-export const getDefaultDataHandler = (): TypeDataHandler => {
+export const getDefaultDataHandler = (): ResponseDataHandler => {
   return (data: any, res: ExResponse) => {
     res.send({ data });
   };
@@ -50,7 +50,7 @@ export const routeApp = (
     docPath?: string;
     logger?: any;
     dataHandlerOptions?: {
-      dataHandler: TypeDataHandler;
+      dataHandler: ResponseDataHandler;
       getSuccessSchema?: TypeGetSuccessSchema;
     };
     notFoundHandle?: ExRequestHandler;

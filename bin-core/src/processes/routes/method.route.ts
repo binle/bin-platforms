@@ -11,7 +11,7 @@ import {
   IArraySchema,
   ISchemaCore,
   TypeConstructor,
-  TypeDataHandler,
+  ResponseDataHandler,
   TypeValidateFunctionInjectedData,
 } from 'src/definitions';
 import {
@@ -28,7 +28,8 @@ export class MethodRoute {
   static defineAPIs(
     controllerInstance: any,
     methodName: string,
-    dataHandler: TypeDataHandler
+    dataHandler: ResponseDataHandler,
+    isCustomDataHandler?: boolean
   ): {
     responseInfo: ApiResponseData;
     requestInfo: ApiRequestData;
@@ -48,7 +49,11 @@ export class MethodRoute {
     }
 
     const requestInfo = MethodRoute.defineRequestInfo(allInjectedParamsInApi, paramsTypes);
-    const responseInfo = MethodRoute.defineResponseInfo(controllerInstance, methodName);
+    const responseInfo = MethodRoute.defineResponseInfo(
+      controllerInstance,
+      methodName,
+      isCustomDataHandler
+    );
 
     return {
       requestInfo,
@@ -124,16 +129,25 @@ export class MethodRoute {
     return requestInfo;
   }
 
-  private static defineResponseInfo(controllerInstance: any, methodName: string) {
+  private static defineResponseInfo(
+    controllerInstance: any,
+    methodName: string,
+    isCustomDataHandler?: boolean
+  ) {
     const responseInjectedData = getInjectedDataOfApiResponse(controllerInstance, methodName) || [];
 
     const responseInfo: ApiResponseData = {};
     for (const injectedData of responseInjectedData) {
       if (injectedData.dataSchema) {
-        responseInfo.success = {
-          data: MethodRoute.defineArraySchema(injectedData.dataSchema as ISchemaCore),
-          description: injectedData.description,
-        };
+        const dataSchema = MethodRoute.defineArraySchema(injectedData.dataSchema as ISchemaCore);
+        if (isCustomDataHandler) {
+          responseInfo.success = dataSchema;
+        } else {
+          responseInfo.success = {
+            data: dataSchema,
+            description: injectedData.description,
+          };
+        }
       } else if (injectedData.error) {
         responseInfo.failed = responseInfo.failed || [];
         responseInfo.failed.push({

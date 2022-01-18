@@ -1,11 +1,11 @@
 import path from 'path';
 import {
-  TypeApiRequestMethod,
   Express,
   ExRequestHandlerParams,
-  MethodPathApi,
   IApiControllerInjectedData,
-  TypeDataHandler,
+  MethodPathApi,
+  ResponseDataHandler,
+  TypeApiRequestMethod,
 } from 'src/definitions';
 import {
   controllerContainer,
@@ -13,13 +13,14 @@ import {
   getAllMiddlewareBeforeRequestHandler,
   getInjectedDataOfApiRequest,
   getMiddlewareErrorRequestHandler,
+  getResponseHandleRequestHandler,
 } from './../api';
 import { MethodRoute } from './method.route';
 
 export class ControllerRoute {
   static defineController(
     app: Express,
-    dataHandler: TypeDataHandler,
+    dataHandler: ResponseDataHandler,
     prefix?: string
   ): MethodPathApi {
     const existedApis: MethodPathApi = {};
@@ -44,7 +45,16 @@ export class ControllerRoute {
           controllerInstance,
           methodName
         );
-        const definedApiData = MethodRoute.defineAPIs(controllerInstance, methodName, dataHandler);
+        const responseDataHandler: ResponseDataHandler = getResponseHandleRequestHandler(
+          controllerInstance,
+          methodName
+        );
+        const definedApiData = MethodRoute.defineAPIs(
+          controllerInstance,
+          methodName,
+          responseDataHandler || dataHandler,
+          !!responseDataHandler
+        );
         requestHandlers.push(definedApiData.requestHandler);
         const handlerError = getMiddlewareErrorRequestHandler(controllerInstance, methodName);
         handlerError && requestHandlers.push(handlerError);

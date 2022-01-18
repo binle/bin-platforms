@@ -1,8 +1,8 @@
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 import {
-  ApiErrorAfterProcessRequestKey,
-  ExErrorRequestHandler,
+  ApiResponseHandleProcessRequestKey,
   Identifier,
+  ResponseDataHandler,
   TypeProcessInjectedMethod,
 } from 'src/definitions';
 import { getDecoratorMethod } from '../../core';
@@ -10,7 +10,7 @@ import { getDecoratorMethod } from '../../core';
 // =====================================================================================================================
 // =====================================================================================================================
 // After
-function getMiddlewareErrorProcessInjectedMethod<T>(
+function getResponseHandlerProcessInjectedMethod<T>(
   metadataMethodKey: Identifier
 ): TypeProcessInjectedMethod<T> {
   return (
@@ -24,14 +24,14 @@ function getMiddlewareErrorProcessInjectedMethod<T>(
   };
 }
 
-export const ApiError = getDecoratorMethod<ExErrorRequestHandler>(
-  getMiddlewareErrorProcessInjectedMethod<ExErrorRequestHandler>(ApiErrorAfterProcessRequestKey)
+export const ApiResponseHandle = getDecoratorMethod<ResponseDataHandler>(
+  getResponseHandlerProcessInjectedMethod<ResponseDataHandler>(ApiResponseHandleProcessRequestKey)
 );
 
-export const getMiddlewareErrorRequestHandler = (
+export const getResponseHandleRequestHandler = (
   instance: any,
   methodName: string
-): ExErrorRequestHandler => {
-  return Reflect.getMetadata(ApiErrorAfterProcessRequestKey, instance, methodName);
+): ResponseDataHandler => {
+  return Reflect.getMetadata(ApiResponseHandleProcessRequestKey, instance, methodName);
 };
 // =====================================================================================================================

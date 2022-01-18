@@ -9,6 +9,7 @@ import {
   ISchemaCore,
   IValidationError,
   ISchemaGeneral,
+  ExResponse,
 } from '../core';
 
 //=====================================================================================
@@ -90,6 +91,9 @@ export interface IApiBeforeInjectedData {
 export const ApiBeforeProcessRequestKey = Symbol('ApiBeforeProcessRequestKey');
 export const ApiErrorAfterProcessRequestKey = Symbol('ApiErrorAfterProcessRequestKey');
 
+export type ResponseDataHandler = (data: any, res: ExResponse) => void;
+export type TypeDataHandler = ResponseDataHandler;
+export const ApiResponseHandleProcessRequestKey = Symbol('ApiResponseHandleProcessRequestKey');
 //=====================================================================================
 export type TypeValidateFunctionInjectedData = (
   ...args: any[]
