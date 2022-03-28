@@ -51,7 +51,7 @@
     "typescript": "^4.0.5"
   },
   "dependencies": {
-    "@bachle/bin-core": "file:./../bin-core",
+    "@bachle/bin-core": "../bin-core",
     "@bachle/bin-logger": "^1.0.0",
     "axios": "^0.21.1",
     "cookie-parser": "^1.4.5",

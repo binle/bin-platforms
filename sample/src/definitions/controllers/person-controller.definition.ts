@@ -1,4 +1,11 @@
-import { ApiProperty, ApiPropertyOptional, IArraySchema, IStringSchema } from '@bachle/bin-core';
+import {
+  ApiProperty,
+  ApiPropertyOptional,
+  IArraySchema,
+  IStringSchema,
+  IValidationError,
+  ValidationError,
+} from '@bachle/bin-core';
 import { Car as Car2 } from './test';
 
 /* eslint-disable @typescript-eslint/no-explicit-any */
@@ -15,7 +22,20 @@ export class Profile {
 }
 
 export class Person {
-  @ApiProperty()
+  @ApiProperty({
+    validation: {
+      validate: async (data?: string, pathName?: string): Promise<IValidationError | undefined> => {
+        // validate name
+        if (data && data.length > 4) {
+          return undefined;
+        }
+        return new ValidationError(
+          pathName || 'name',
+          `${pathName || 'name'} is too short, it should be longer than 4 chars!`
+        );
+      },
+    },
+  })
   name: string;
 
   @ApiProperty({
