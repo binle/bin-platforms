@@ -91,7 +91,7 @@ export interface IObjectSchema<T = any> extends ISchemaCore<T, IValidationObject
 }
 //=====================================================================================
 export type ISchemaGeneral =
-  | IBooleanSchema
+  | ISchemaCore
   | IBooleanSchema
   | IStringSchema
   | INumberSchema
